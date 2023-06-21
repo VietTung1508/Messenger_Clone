@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import clsx from "clsx";
 import useOtherUser from "@/app/hooks/useOtherUser";
 import Avatar from "@/app/components/Avatar";
+import GroupAvatar from "@/app/components/GroupAvatar";
 
 interface ConversationBoxProps {
   data: FullConversationType;
@@ -43,8 +44,6 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
       return false;
     }
 
-    console.log(lastMessage);
-
     const seenArray = lastMessage.seen || [];
 
     if (!userEmail) {
@@ -73,9 +72,14 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
     w-full relative flex items-center space-x-3 hover:bg-neutral-100 rounded-lg transition cursor-pointer p-3
   `)}
     >
-      <Avatar user={otherUser} />
+      {data.isGroup ? (
+        <GroupAvatar users={data.users} />
+      ) : (
+        <Avatar user={otherUser} />
+      )}
       <div className="min-w-0 flex-1">
         <div className="focus:outline-none">
+          <span className="absolute inset-0" aria-hidden="true" />
           <div className="flex justify-between items-center mb-1">
             <p className="text-md font-medium text-gray-900">
               {data.name || otherUser.name}
@@ -86,8 +90,17 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
               </p>
             )}
           </div>
-          <p className="text-gray-600">{lastMessageText}</p>
+          <p
+            className={clsx(
+              `
+          truncate text-sm`,
+              hasSeen ? "text-gray-500" : "text-black font-medium"
+            )}
+          >
+            {lastMessageText}
+          </p>
         </div>
+        <p></p>
       </div>
     </div>
   );
